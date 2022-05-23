@@ -74,7 +74,7 @@ task SplitIntervalList {
   }
 }
 
-task ImportGVCFs {
+task ImportGVCFs_import {
 
   input {
     File sample_name_map
@@ -84,12 +84,15 @@ task ImportGVCFs {
     File ref_dict
 
     String workspace_dir_name
+    String? index
 
     Int disk_size
     Int batch_size
 
     String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.2.6.1"
   }
+
+  String idx = select_first([index, ""])
 
   command <<<
     set -euo pipefail
@@ -132,6 +135,108 @@ task ImportGVCFs {
   }
 }
 
+task ImportGVCFs_update {
+
+  input {
+    File sample_name_map
+    File interval
+    File ref_fasta
+    File ref_fasta_index
+    File ref_dict
+
+    File workspace_tar
+
+    String workspace_dir_name
+    String? index
+
+    Int disk_size
+    Int batch_size
+
+    String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.2.6.1"
+  }
+
+  String idx = select_first([index, ""])
+
+  command <<<
+    set -euo pipefail
+
+    tar -xf ~{workspace_tar}
+    WORKSPACE=$(basename ~{workspace_tar} .tar)
+
+    # We've seen some GenomicsDB performance regressions related to intervals, so we're going to pretend we only have a single interval
+    # using the --merge-input-intervals arg
+    # There's no data in between since we didn't run HaplotypeCaller over those loci so we're not wasting any compute
+
+    # The memory setting here is very important and must be several GiB lower
+    # than the total memory allocated to the VM because this tool uses
+    # a significant amount of non-heap memory for native libraries.
+    # Also, testing has shown that the multithreaded reader initialization
+    # does not scale well beyond 5 threads, so don't increase beyond that.
+    gatk --java-options "-Xms8000m -Xmx25000m" \
+      GenomicsDBImport \
+      --genomicsdb-update-workspace-path $WORKSPACE \
+      --batch-size ~{batch_size} \
+      --sample-name-map ~{sample_name_map} \
+      --reader-threads 5 \
+      --merge-input-intervals \
+      --consolidate
+
+    tar -cf ~{workspace_dir_name}.tar ~{workspace_dir_name}
+  >>>
+
+  runtime {
+    memory: "26000 MiB"
+    cpu: 4
+    bootDiskSizeGb: 15
+    disks: "local-disk " + disk_size + " HDD"
+    docker: gatk_docker
+    preemptible: 1
+  }
+
+  output {
+    File output_genomicsdb = "~{workspace_dir_name}.tar"
+  }
+}
+
+task ImportGDB {
+
+  input {
+    File interval
+    File workspace_tar
+
+    String workspace_dir_name
+    String? index
+
+    Int disk_size
+    Int batch_size
+
+    String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.2.6.1"
+  }
+
+  String idx = select_first([index, ""])
+
+  command <<<
+    set -euo pipefail
+
+    # tar -xf ~{workspace_tar}
+    # tar -cf ~{workspace_dir_name}.tar ~{workspace_dir_name}
+    cp -lf ~{workspace_tar} ~{workspace_dir_name}.tar
+  >>>
+
+  runtime {
+    memory: "3750 MiB"
+    cpu: 1
+    bootDiskSizeGb: 15
+    disks: "local-disk " + disk_size + " HDD"
+    docker: gatk_docker
+    preemptible: 1
+  }
+
+  output {
+    File output_genomicsdb = "~{workspace_dir_name}.tar"
+  }
+}
+
 task GenotypeGVCFs {
 
   input {
@@ -148,7 +253,7 @@ task GenotypeGVCFs {
 
     Int disk_size
     # This is needed for gVCFs generated with GATK3 HaplotypeCaller
-    Boolean allow_old_rms_mapping_quality_annotation_data = false
+    Boolean allow_old_rms_mapping_quality_annotation_data = true
     String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.2.6.1"
   }
 
@@ -174,12 +279,14 @@ task GenotypeGVCFs {
       -V gendb://$WORKSPACE \
       -L ~{interval} \
       ~{true='--allow-old-rms-mapping-quality-annotation-data' false='' allow_old_rms_mapping_quality_annotation_data} \
-      --merge-input-intervals
+      --merge-input-intervals \
+      --max-alternate-alleles 4 \
+      --genomicsdb-max-alternate-alleles 7
   >>>
 
   runtime {
     memory: "26000 MiB"
-    cpu: 2
+    #cpu: 2
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
@@ -492,7 +599,7 @@ task SNPsVariantRecalibrator {
 
   runtime {
     memory: "~{machine_mem} MiB"
-    cpu: 2
+    cpu: 16
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
