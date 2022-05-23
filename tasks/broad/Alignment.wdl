@@ -116,7 +116,9 @@ task SamToFastqAndBwaMemAndMba {
     docker: "us.gcr.io/broad-gotc-prod/samtools-picard-bwa:1.0.2-0.7.15-2.26.10-1643840748"
     preemptible: preemptible_tries
     memory: "14 GiB"
-    cpu: "16"
+    cpu: "4"
+    requested_memory_mb_per_core: 3000
+    #runtime_minutes: 1200
     disks: "local-disk " + disk_size + " HDD"
   }
   output {
@@ -144,7 +146,8 @@ task SamSplitter {
 
     total_reads=$(samtools view -c ~{input_bam})
 
-    java -Dsamjdk.compression_level=~{compression_level} -Xms3000m -Xmx3600m -jar /usr/gitc/picard.jar SplitSamByNumberOfReads \
+    java -Dsamjdk.compression_level=~{compression_level} -Xms3000m -jar /usr/gitc/picard.jar SplitSamByNumberOfReads \
+      VALIDATION_STRINGENCY=SILENT \
       INPUT=~{input_bam} \
       OUTPUT=output_dir \
       SPLIT_TO_N_READS=~{n_reads} \
@@ -157,6 +160,8 @@ task SamSplitter {
     docker: "us.gcr.io/broad-gotc-prod/samtools-picard-bwa:1.0.2-0.7.15-2.26.10-1643840748"
     preemptible: preemptible_tries
     memory: "3.75 GiB"
+    cpu: "2"
+    requested_memory_mb_per_core: 2000
     disks: "local-disk " + disk_size + " HDD"
   }
 }
