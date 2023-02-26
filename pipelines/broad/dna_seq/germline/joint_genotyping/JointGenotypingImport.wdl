@@ -6,7 +6,7 @@ import "../../../../../tasks/broad/JointGenotypingTasks.wdl" as Tasks
 # Joint Genotyping for hg38 Whole Genomes and Exomes (has not been tested on hg19)
 workflow JointGenotyping {
 
-  String pipeline_version = "1.6.1"
+  String pipeline_version = "1.6.6"
 
   input {
     File unpadded_intervals_file
@@ -53,7 +53,7 @@ workflow JointGenotyping {
     Float excess_het_threshold = 54.69
     Float snp_filter_level
     Float indel_filter_level
-    Int SNP_VQSR_downsampleFactor
+    Int snp_vqsr_downsampleFactor
 
     Int? top_level_scatter_count
     Boolean? gather_vcfs
