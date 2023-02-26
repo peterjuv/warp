@@ -74,6 +74,7 @@ task SplitIntervalList {
   }
 }
 
+# Consider speed-up: https://gatk.broadinstitute.org/hc/en-us/articles/360056138571-GDBI-usage-and-performance-guidelines
 task ImportGVCFs_import {
 
   input {
@@ -152,7 +153,7 @@ task ImportGVCFs_update {
     Int disk_size
     Int batch_size
 
-    String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.2.6.1"
+    String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.3.0.0"
   }
 
   String idx = select_first([index, ""])
@@ -210,7 +211,7 @@ task ImportGDB {
     Int disk_size
     Int batch_size
 
-    String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.2.6.1"
+    String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.3.0.0"
   }
 
   String idx = select_first([index, ""])
@@ -243,6 +244,7 @@ task ImportGDB {
 #        --genomicsdb-max-alternate-alleles 7, default max-alternate-alleles + 3
 #        --max-genotype-count 256 (== 2^8); default 2^10=1024
 # Note: --disable-bam-index-caching: Caching is automatically disabled if there are no intervals specified.
+# Ref: https://gatk.broadinstitute.org/hc/en-us/community/posts/360063088471-Speeding-up-GenotypeGVCFS-GATK4
 task GenotypeGVCFs {
 
   input {
