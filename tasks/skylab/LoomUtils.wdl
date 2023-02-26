@@ -3,7 +3,7 @@ version 1.0
 task SmartSeq2LoomOutput {
   input {
     #runtime values
-    String docker = "quay.io/humancellatlas/secondary-analysis-loom-output:0.0.6-1"
+    String docker = "us.gcr.io/broad-gotc-prod/pytools:1.0.0-1661263730"
     # the gene count file "<input_id>_rsem.genes.results" in the task results folder call-RSEMExpression
     File rsem_gene_results
     # file named "<input_id>_QCs.csv" in the folder  "call-GroupQCOutputs/glob-*" of the the SS2  output
@@ -17,7 +17,7 @@ task SmartSeq2LoomOutput {
     String pipeline_version
     Int preemptible = 3
     Int disk = 200
-    Int machine_mem_mb = 18
+    Int machine_mem_mb = 16000
     Int cpu = 4
   }
 
@@ -32,7 +32,7 @@ task SmartSeq2LoomOutput {
   command {
     set -euo pipefail
 
-    python3 /tools/create_loom_ss2.py \
+    python3 /usr/gitc/create_loom_ss2.py \
        --qc_files ~{sep=' ' smartseq_qc_files} \
        --rsem_genes_results  ~{rsem_gene_results} \
        --output_loom_path  "~{input_id}.loom" \
@@ -46,8 +46,9 @@ task SmartSeq2LoomOutput {
   runtime {
     docker: docker
     cpu: cpu  # note that only 1 thread is supported by pseudobam
-    memory: "~{machine_mem_mb} GiB"
+    memory: "~{machine_mem_mb} MiB"
     disks: "local-disk ~{disk} HDD"
+    disk: disk + " GB" # TES
     preemptible: preemptible
   }
 
@@ -61,7 +62,7 @@ task OptimusLoomGeneration {
 
   input {
     #runtime values
-    String docker = "quay.io/humancellatlas/secondary-analysis-loom-output:v1.3.0"
+    String docker = "us.gcr.io/broad-gotc-prod/pytools:1.0.0-1661263730"
     # name of the sample
     String input_id
     # user provided id
@@ -88,7 +89,7 @@ task OptimusLoomGeneration {
 
     Int preemptible = 3
     Int disk = 200
-    Int machine_mem_mb = 18
+    Int machine_mem_mb = 16000
     Int cpu = 4
   }
 
@@ -104,7 +105,7 @@ task OptimusLoomGeneration {
     set -euo pipefail
 
     if [ "~{counting_mode}" == "sc_rna" ]; then
-        python3 /tools/create_loom_optimus.py \
+        python3 /usr/gitc/create_loom_optimus.py \
           --empty_drops_file ~{empty_drops_result} \
           --add_emptydrops_data "yes" \
           --annotation_file ~{annotation_file} \
@@ -121,7 +122,7 @@ task OptimusLoomGeneration {
           --expression_data_type "exonic" \
           --pipeline_version ~{pipeline_version}
     else
-        python3 /tools/create_snrna_optimus.py \
+        python3 /usr/gitc/create_snrna_optimus.py \
           --annotation_file ~{annotation_file} \
           --cell_metrics ~{cell_metrics} \
           --gene_metrics ~{gene_metrics} \
@@ -141,8 +142,9 @@ task OptimusLoomGeneration {
   runtime {
     docker: docker
     cpu: cpu  # note that only 1 thread is supported by pseudobam
-    memory: "~{machine_mem_mb} GiB"
+    memory: "~{machine_mem_mb} MiB"
     disks: "local-disk ~{disk} HDD"
+    disk: disk + " GB" # TES
     preemptible: preemptible
   }
 
@@ -163,9 +165,9 @@ task AggregateSmartSeq2Loom {
         String? species
         String? organ
         String pipeline_version
-        String docker = "quay.io/humancellatlas/secondary-analysis-loom-output:0.0.6-1"
+        String docker = "us.gcr.io/broad-gotc-prod/pytools:1.0.0-1661263730"
         Int disk = 200
-        Int machine_mem_mb = 4
+        Int machine_mem_mb = 4000
         Int cpu = 1
     }
 
@@ -177,7 +179,7 @@ task AggregateSmartSeq2Loom {
       set -e
       
       # Merge the loom files
-      python3 /tools/ss2_loom_merge.py \
+      python3 /usr/gitc/ss2_loom_merge.py \
       --input-loom-files ~{sep=' ' loom_input} \
       --output-loom-file "~{batch_id}.loom" \
       --batch_id ~{batch_id} \
@@ -199,8 +201,9 @@ task AggregateSmartSeq2Loom {
     runtime {
       docker: docker
       cpu: cpu
-      memory: "~{machine_mem_mb} GiB"
+      memory: "~{machine_mem_mb} MiB"
       disks: "local-disk ~{disk} HDD"
+      disk: disk + " GB" # TES
       preemptible: 3
       maxRetries: 1
     }
@@ -211,7 +214,7 @@ task SingleNucleusOptimusLoomOutput {
 
     input {
         #runtime values
-        String docker = "quay.io/humancellatlas/secondary-analysis-loom-output:v1.1.0"
+        String docker = "us.gcr.io/broad-gotc-prod/pytools:1.0.0-1661263730"
         # name of the sample
         String input_id
         # user provided id
@@ -241,7 +244,7 @@ task SingleNucleusOptimusLoomOutput {
 
         Int preemptible = 3
         Int disk = 200
-        Int machine_mem_mb = 18
+        Int machine_mem_mb = 16000
         Int cpu = 4
     }
 
@@ -256,7 +259,7 @@ task SingleNucleusOptimusLoomOutput {
     command {
         set -euo pipefail
 
-        python3 /tools/create_snrna_optimus_counts.py \
+        python3 /usr/gitc/create_snrna_optimus_counts.py \
         --annotation_file ~{annotation_file} \
         --cell_metrics ~{cell_metrics} \
         --gene_metrics ~{gene_metrics} \
@@ -278,8 +281,9 @@ task SingleNucleusOptimusLoomOutput {
     runtime {
         docker: docker
         cpu: cpu  # note that only 1 thread is supported by pseudobam
-        memory: "~{machine_mem_mb} GiB"
+        memory: "~{machine_mem_mb} MiB"
         disks: "local-disk ~{disk} HDD"
+        disk: disk + " GB" # TES
         preemptible: preemptible
     }
 
@@ -292,7 +296,7 @@ task SingleNucleusOptimusLoomOutput {
 task SingleNucleusSmartSeq2LoomOutput {
     input {
         #runtime values
-        String docker = "quay.io/humancellatlas/secondary-analysis-loom-output:0.0.8"
+        String docker = "us.gcr.io/broad-gotc-prod/pytools:1.0.0-1661263730"
 
         Array[File] alignment_summary_metrics
         Array[File] dedup_metrics
@@ -313,7 +317,7 @@ task SingleNucleusSmartSeq2LoomOutput {
         String pipeline_version
         Int preemptible = 3
         Int disk = 200
-        Int machine_mem_mb = 8
+        Int machine_mem_mb = 8000
         Int cpu = 4
     }
 
@@ -339,7 +343,7 @@ task SingleNucleusSmartSeq2LoomOutput {
         do
         # creates a table with gene_id, gene_name, intron and exon counts
         echo "Running create_snss2_counts_csv."
-        python /tools/create_snss2_counts_csv.py \
+        python /usr/gitc/create_snss2_counts_csv.py \
         --in-gtf ~{annotation_introns_added_gtf} \
         --intron-counts ${introns_counts_files[$i]} \
         --exon-counts ${exons_counts_files[$i]}  \
@@ -354,7 +358,7 @@ task SingleNucleusSmartSeq2LoomOutput {
 
         # create the loom file
         echo "Running create_loom_snss2."
-        python3 /tools/create_loom_snss2.py \
+        python3 /usr/gitc/create_loom_snss2.py \
         --qc_files "${output_prefix[$i]}.Picard_group.csv" \
         --count_results  "${output_prefix[$i]}.exon_intron_counts.tsv" \
         --output_loom_path "${output_prefix[$i]}.loom" \
@@ -370,8 +374,9 @@ task SingleNucleusSmartSeq2LoomOutput {
     runtime {
         docker: docker
         cpu: cpu
-        memory: "~{machine_mem_mb} GiB"
+        memory: "~{machine_mem_mb} MiB"
         disks: "local-disk ~{disk} HDD"
+        disk: disk + " GB" # TES
         preemptible: preemptible
     }
 
