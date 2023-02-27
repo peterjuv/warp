@@ -74,7 +74,10 @@ task SplitIntervalList {
   }
 }
 
-# Consider speed-up: https://gatk.broadinstitute.org/hc/en-us/articles/360056138571-GDBI-usage-and-performance-guidelines
+# CEPH burden: https://gatk.broadinstitute.org/hc/en-us/articles/360056138571-GDBI-usage-and-performance-guidelines
+# Added     --genomicsdb-shared-posixfs-optimizations true  # improve the usability and performance for shared Posix Filesystems(e.g. NFS, Lustre)
+# Consider  --merge-contigs-into-num-partitions 1;5;25;<100 # This can improve performance in the case where the user is trying to import a very large number of contigs - larger than 100
+#           --bypass-feature-reader true                    # Use htslib to read input VCFs instead of GATK's FeatureReader. This will reduce memory usage and potentially speed up the import.
 task ImportGVCFs_import {
 
   input {
@@ -117,7 +120,8 @@ task ImportGVCFs_import {
       --sample-name-map ~{sample_name_map} \
       --reader-threads 5 \
       --merge-input-intervals \
-      --consolidate
+      --consolidate \
+      --genomicsdb-shared-posixfs-optimizations true
 
     tar -cf ~{workspace_dir_name}.tar ~{workspace_dir_name}
   >>>
@@ -180,7 +184,8 @@ task ImportGVCFs_update {
       --sample-name-map ~{sample_name_map} \
       --reader-threads 5 \
       --merge-input-intervals \
-      --consolidate
+      --consolidate \
+      --genomicsdb-shared-posixfs-optimizations true
 
     tar -cf ~{workspace_dir_name}.tar ~{workspace_dir_name}
   >>>
