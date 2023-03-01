@@ -1,0 +1,8 @@
+{
+  "ReblockGVCF.gvcf": "gs://srv/pth/file.g.vcf.gz",
+  "ReblockGVCF.ref_fasta": "gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta",
+  "ReblockGVCF.small_disk": 100,
+  "ReblockGVCF.medium_disk": 200,
+  "ReblockGVCF.large_disk": 1000,
+  "ReblockGVCF.huge_disk": 2000
+}
