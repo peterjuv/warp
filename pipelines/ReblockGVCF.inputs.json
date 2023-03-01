@@ -1,6 +1,9 @@
 {
-  "ReblockGVCF.gvcf": "gs://srv/pth/file.g.vcf.gz",
+  "ReblockGVCF.sample_name": "sampleName",
+  "ReblockGVCF.gvcf": "gs://srv/pth/sampleName.g.vcf.gz",
   "ReblockGVCF.ref_fasta": "gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta",
+  "ReblockGVCF.ref_fasta_index": "gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.fai",
+  "ReblockGVCF.ref_dict": "gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dict",
   "ReblockGVCF.small_disk": 100,
   "ReblockGVCF.medium_disk": 200,
   "ReblockGVCF.large_disk": 1000,

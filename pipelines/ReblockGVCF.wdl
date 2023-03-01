@@ -2,37 +2,50 @@ version 1.0
 
 workflow ReblockGVCF {
 
-  File gvcf
-  File ref_fasta
-  
-  Int small_disk
-  Int medium_disk
-  Int huge_disk
+  input {
+    String sample_name
+    File gvcf
+    File ref_fasta    
+    File ref_fasta_index
+    File ref_dict
+    Int small_disk
+    Int medium_disk
+    Int large_disk
+    Int huge_disk
+  }
 
-  String sub_strip_path = "^.*/"
-  String sub_strip_gvcf = ".g.vcf.gz" + "$"
-  String sub_sub = sub(sub(gvcf, sub_strip_path, ""), sub_strip_gvcf, "")
+  # String sub_strip_path = "^.*/"
+  # String sub_strip_gvcf = ".g.vcf.gz" + "$"
+  # String sub_sub = sub(sub(gvcf, sub_strip_path, ""), sub_strip_gvcf, "")
 
   call Reblock {
-      input:
-        gvcf = gvcf,
-        gvcf_index = gvcf + ".tbi",
-        ref_fasta = ref_fasta,
-        output_vcf_filename = sub_sub + ".rbl.g.vcf.gz",
-        disk_size = medium_disk
-    }
+    input:
+      sample_name = sample_name,
+      gvcf = gvcf,
+      gvcf_index = gvcf + ".tbi",
+      ref_fasta = ref_fasta,
+      ref_fasta_index = ref_fasta_index,
+      ref_dict = ref_dict,
+      # output_vcf_filename = sub_sub + ".rbl.g.vcf.gz",
+      output_vcf_filename = sample_name + ".rbl.g.vcf.gz",
+      disk_size = medium_disk
+  }
+  
   output {
-    Reblock.output_vcf
-    Reblock.output_vcf_index
+    File output_vcf = Reblock.output_vcf
+    File output_vcf_index = Reblock.output_vcf_index
   }
 }
 
 task Reblock {
 
   input {
+    String sample_name
     File gvcf
     File gvcf_index
     File ref_fasta
+    File ref_fasta_index
+    File ref_dict
     String output_vcf_filename
     Int disk_size
     String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.3.0.0"
@@ -41,7 +54,7 @@ task Reblock {
   command <<<
     gatk --java-options "-Xms3g -Xmx3g" \
       ReblockGVCF \
-      -R ~{ref_fasta}
+      -R ~{ref_fasta} \
       -V ~{gvcf} \
       -drop-low-quals \
       -do-qual-approx \
