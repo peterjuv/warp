@@ -8,10 +8,6 @@ workflow ReblockGVCF {
     File ref_fasta    
     File ref_fasta_index
     File ref_dict
-    Int small_disk
-    Int medium_disk
-    Int large_disk
-    Int huge_disk
   }
 
   # String sub_strip_path = "^.*/"
@@ -28,7 +24,6 @@ workflow ReblockGVCF {
       ref_dict = ref_dict,
       # output_vcf_filename = sub_sub + ".rbl.g.vcf.gz",
       output_vcf_filename = sample_name + ".rbl.g.vcf.gz",
-      disk_size = medium_disk
   }
   
   output {
@@ -43,10 +38,10 @@ workflow ReblockGVCF {
 ##  https://github.com/broadinstitute/warp/blob/a40aeb39b220431f225751ac954c7e0dac8369c8/pipelines/broad/dna_seq/germline/variant_calling/VariantCalling.wdl#L154
 ## Params:
 ##  -do-qual-approx: min Gnarly & GermlineVariantDiscovery (used)
-##  -drop-low-quals: min Gnarly, but not in GermlineVariantDiscovery (used)
-##  -rgq-threshold 10: min Gnarly, but not in GermlineVariantDiscovery (left out) 
-## --floor-blocks -GQB 20 -GQB 30 -GQB 40: as in GermlineVariantDiscovery (used)
-## --floor-blocks -GQB 10 -GQB 20 -GQB 30 -GQB 40 -GQB 50 -GQB 60 -GQB 70 -GQB 80 -GQB 90 -GQB 99: as used by WUSTL
+##  --drop-low-quals: min Gnarly, but not in GermlineVariantDiscovery (NOT used)
+##  -rgq-threshold 10: min Gnarly, but not in GermlineVariantDiscovery (NOT used) 
+##  --floor-blocks -GQB 20 -GQB 30 -GQB 40: as in GermlineVariantDiscovery (used)
+##  --floor-blocks -GQB 10 -GQB 20 -GQB 30 -GQB 40 -GQB 50 -GQB 60 -GQB 70 -GQB 80 -GQB 90 -GQB 99 (as used by WUSTL)
 
 task Reblock {
 
@@ -58,23 +53,30 @@ task Reblock {
     File ref_fasta_index
     File ref_dict
     String output_vcf_filename
-    Int disk_size
     String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.3.0.0"
+    Int additional_disk = 20
+    String? annotations_to_keep_command
+    Float? tree_score_cutoff
   }
 
-  command <<<
-    gatk --java-options "-Xms8000m -Xmx15000m" \
+  Int disk_size = ceil((size(gvcf, "GiB")) * 4) + additional_disk
+
+  command {
+    set -e 
+
+    gatk --java-options "-Xms3000m -Xmx3000m" \
       ReblockGVCF \
       -R ~{ref_fasta} \
       -V ~{gvcf} \
       -do-qual-approx \
-      -drop-low-quals \ 
       --floor-blocks -GQB 20 -GQB 30 -GQB 40 \
+      ~{annotations_to_keep_command} \
+      ~{"--tree-score-threshold-to-no-call " + tree_score_cutoff} \
       -O ~{output_vcf_filename}
-  >>>
+  }
 
   runtime {
-    memory: "16000 MiB"
+    memory: "3750 MiB"
     cpu: 2
     disks: "local-disk " + disk_size + " HDD"
     docker: gatk_docker

@@ -1,0 +1,33 @@
+{
+	/*"folders":
+	[
+		{
+			"path": "/home/peterjuv/Documents/CIGM/SGPproc",
+		},
+		{
+			"path": "/home/peterjuv/Documents/CIGM/SGP_tmp",
+		},
+		{
+			"path": "."
+		},
+	],*/
+	"settings":
+	{
+		"LSP":
+		{
+			"LSP-R":
+			{
+				"enabled": true,
+			},
+		},
+	},
+	"folders":
+	[
+		{
+			"path": ".",
+		},
+		{
+			"path": "/home/peterjuv/GithubRepos/broadinstitute/warp"
+		},
+	],
+}
