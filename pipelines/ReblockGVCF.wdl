@@ -37,6 +37,17 @@ workflow ReblockGVCF {
   }
 }
 
+## Params refs:
+##  https://gatk.broadinstitute.org/hc/en-us/articles/9570412154139-ReblockGVCF
+##  https://github.com/broadinstitute/warp/blob/a40aeb39b220431f225751ac954c7e0dac8369c8/tasks/broad/GermlineVariantDiscovery.wdl#L197
+##  https://github.com/broadinstitute/warp/blob/a40aeb39b220431f225751ac954c7e0dac8369c8/pipelines/broad/dna_seq/germline/variant_calling/VariantCalling.wdl#L154
+## Params:
+##  -do-qual-approx: min Gnarly & GermlineVariantDiscovery (used)
+##  -drop-low-quals: min Gnarly, but not in GermlineVariantDiscovery (used)
+##  -rgq-threshold 10: min Gnarly, but not in GermlineVariantDiscovery (left out) 
+## --floor-blocks -GQB 20 -GQB 30 -GQB 40: as in GermlineVariantDiscovery (used)
+## --floor-blocks -GQB 10 -GQB 20 -GQB 30 -GQB 40 -GQB 50 -GQB 60 -GQB 70 -GQB 80 -GQB 90 -GQB 99: as used by WUSTL
+
 task Reblock {
 
   input {
@@ -52,21 +63,20 @@ task Reblock {
   }
 
   command <<<
-    gatk --java-options "-Xms3g -Xmx3g" \
+    gatk --java-options "-Xms8000m -Xmx15000m" \
       ReblockGVCF \
       -R ~{ref_fasta} \
       -V ~{gvcf} \
-      -drop-low-quals \
       -do-qual-approx \
-      -rgq-threshold 10 \
-      --floor-blocks -GQB 10 -GQB 20 -GQB 30 -GQB 40 -GQB 50 -GQB 60 -GQB 70 -GQB 80 -GQB 90 -GQB 99 \
+      -drop-low-quals \ 
+      --floor-blocks -GQB 20 -GQB 30 -GQB 40 \
       -O ~{output_vcf_filename}
   >>>
 
   runtime {
-    memory: "3 GB"
+    memory: "16000 MiB"
+    cpu: 2
     disks: "local-disk " + disk_size + " HDD"
-    preemptible: 3
     docker: gatk_docker
   }
 
