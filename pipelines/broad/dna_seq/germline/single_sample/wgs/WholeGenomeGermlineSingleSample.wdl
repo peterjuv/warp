@@ -35,7 +35,7 @@ import "../../../../../../tasks/broad/BamToCram.wdl" as ToCram
 import "../../../../../../tasks/broad/Utilities.wdl" as Utilities
 import "../../../../../../pipelines/broad/dna_seq/germline/variant_calling/VariantCalling.wdl" as ToGvcf
 import "../../../../../../structs/dna_seq/DNASeqStructs.wdl"
-import "https://raw.githubusercontent.com/peterjuv/seq-format-conversion/master/bam-to-unmapped-bams.wdl" as BamToUbam
+import "https://raw.githubusercontent.com/peterjuv/seq-format-conversion/kigm-dev/bam-to-unmapped-bams.wdl" as BamToUbam
 
 # WORKFLOW DEFINITION
 workflow WholeGenomeGermlineSingleSample {
