@@ -36,6 +36,7 @@ import "../../../../../../tasks/broad/Utilities.wdl" as Utilities
 import "../../../../../../pipelines/broad/dna_seq/germline/variant_calling/VariantCalling.wdl" as ToGvcf
 import "../../../../../../structs/dna_seq/DNASeqStructs.wdl"
 import "https://raw.githubusercontent.com/peterjuv/seq-format-conversion/kigm-dev/bam-to-unmapped-bams.wdl" as BamToUbam
+import "../../../../../../pipelines/ReblockGVCF.wdl" as ReblockGVCF
 
 # WORKFLOW DEFINITION
 workflow WholeGenomeGermlineSingleSample {
@@ -212,6 +213,15 @@ workflow WholeGenomeGermlineSingleSample {
       use_dragen_hard_filtering = use_dragen_hard_filtering_
   }
 
+  call ReblockGVCF.ReblockGVCF as GvcfToRblGvcf {
+    input:
+      sample_name = sample_and_unmapped_bams.sample_name,
+      gvcf = BamToGvcf.output_vcf,
+      ref_fasta = references.reference_fasta.ref_fasta,
+      ref_fasta_index = references.reference_fasta.ref_fasta_index,
+      ref_dict = references.reference_fasta.ref_dict
+  }
+ 
   if (provide_bam_output) {
     File provided_output_bam = UnmappedBamToAlignedBam.output_bam
     File provided_output_bam_index = UnmappedBamToAlignedBam.output_bam_index
@@ -279,6 +289,9 @@ workflow WholeGenomeGermlineSingleSample {
 
     File output_vcf = BamToGvcf.output_vcf
     File output_vcf_index = BamToGvcf.output_vcf_index
+
+    File output_reblocked_vcf = GvcfToRblGvcf.output_vcf
+    File output_reblocked_vcf_index = GvcfToRblGvcf.output_vcf_index
   }
   meta {
     allowNestedInputs: true
