@@ -626,7 +626,7 @@ task ValidateVCF {
 
   command {
     # Note that WGS needs a lot of memory to do the -L *.vcf if an interval file is not supplied
-    gatk --java-options "-Xms6000m -Xmx6500m" \
+    gatk --java-options "-Xms6000m -Xmx15000m" \
       ValidateVariants \
       -V ~{input_vcf} \
       -R ~{ref_fasta} \
@@ -639,7 +639,7 @@ task ValidateVCF {
   runtime {
     docker: gatk_docker
     preemptible: preemptible_tries
-    memory: "7000 MiB"
+    memory: "16000 MiB"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
   }
