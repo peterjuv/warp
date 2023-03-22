@@ -13,3 +13,6 @@
 # python virtual environments
 venv/
 .flake8
+
+# sublime
+*.sublime*
