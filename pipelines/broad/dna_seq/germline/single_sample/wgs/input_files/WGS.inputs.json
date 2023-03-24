@@ -1,0 +1,51 @@
+{
+  "WholeGenomeGermlineSingleSample.sample_and_unmapped_bams": {
+    "sample_name": "RD660",
+    "base_file_name": "RD660",
+    "flowcell_unmapped_bams": [
+      "/absPath/inputs/RD660.marked.bam"
+    ],
+    "final_gvcf_base_name": "RD660",
+    "unmapped_bam_suffix": ".bam"
+  },
+  "WholeGenomeGermlineSingleSample.input_mapped_bam": "/absPath/inputs/RD660.marked.bam",
+  "WholeGenomeGermlineSingleSample.references": {
+    "contamination_sites_ud": "/absPath/wgs_reference/1000g.phase3.100k.b38.vcf.gz.dat.UD",
+    "contamination_sites_bed": "/absPath/wgs_reference/1000g.phase3.100k.b38.vcf.gz.dat.bed",
+    "contamination_sites_mu": "/absPath/wgs_reference/1000g.phase3.100k.b38.vcf.gz.dat.mu",
+    "calling_interval_list": "/absPath/wgs_reference/wgs_calling_regions.hg38.interval_list",
+    "reference_fasta": {
+      "ref_dict": "/absPath/wgs_reference/Homo_sapiens_assembly38.dict",
+      "ref_fasta": "/absPath/wgs_reference/Homo_sapiens_assembly38.fasta",
+      "ref_fasta_index": "/absPath/wgs_reference/Homo_sapiens_assembly38.fasta.fai",
+      "ref_alt": "/absPath/wgs_reference/Homo_sapiens_assembly38.fasta.64.alt",
+      "ref_sa": "/absPath/wgs_reference/Homo_sapiens_assembly38.fasta.64.sa",
+      "ref_amb": "/absPath/wgs_reference/Homo_sapiens_assembly38.fasta.64.amb",
+      "ref_bwt": "/absPath/wgs_reference/Homo_sapiens_assembly38.fasta.64.bwt",
+      "ref_ann": "/absPath/wgs_reference/Homo_sapiens_assembly38.fasta.64.ann",
+      "ref_pac": "/absPath/wgs_reference/Homo_sapiens_assembly38.fasta.64.pac"
+    },
+    "known_indels_sites_vcfs": [
+      "/absPath/wgs_reference/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz",
+      "/absPath/wgs_reference/Homo_sapiens_assembly38.known_indels.vcf.gz"
+    ],
+    "known_indels_sites_indices": [
+      "/absPath/wgs_reference/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi",
+      "/absPath/wgs_reference/Homo_sapiens_assembly38.known_indels.vcf.gz.tbi"
+    ],
+    "dbsnp_vcf": "/absPath/wgs_reference/Homo_sapiens_assembly38.dbsnp138.vcf",
+    "dbsnp_vcf_index": "/absPath/wgs_reference/Homo_sapiens_assembly38.dbsnp138.vcf.idx",
+    "evaluation_interval_list": "/absPath/wgs_reference/wgs_evaluation_regions.hg38.interval_list",
+    "haplotype_database_file": "/absPath/wgs_reference/Homo_sapiens_assembly38.haplotype_database.txt"
+  },
+  "WholeGenomeGermlineSingleSample.scatter_settings": {
+    "haplotype_scatter_count": 10,
+    "break_bands_at_multiples_of": 100000
+  },
+  "WholeGenomeGermlineSingleSample.wgs_coverage_interval_list": "/absPath/wgs_reference/wgs_coverage_regions.hg38.interval_list",
+  "WholeGenomeGermlineSingleSample.papi_settings": {
+    "preemptible_tries": 3,
+    "agg_preemptible_tries": 3
+  }
+}
+
