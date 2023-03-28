@@ -91,10 +91,7 @@ workflow JointGenotyping {
       sample_name_map = sample_name_map
   }
 
-  ## Error: hardlink or symlink all the files into the glob directory: 
-  ##  call-SplitIntervalList/execution/script: line 45: /bin/ln: Argument list too long
-  ## Fix: call Tasks.SplitIntervalList ->  call Tasks.SplitIntervalList as S
-  call Tasks.SplitIntervalList as S {
+  call Tasks.SplitIntervalList {
     input:
       interval_list = unpadded_intervals_file,
       scatter_count = scatter_count,
@@ -105,7 +102,7 @@ workflow JointGenotyping {
       sample_names_unique_done = CheckSamplesUnique.samples_unique
   }
 
-  Array[File] unpadded_intervals = S.output_intervals
+  Array[File] unpadded_intervals = SplitIntervalList.output_intervals
 
   scatter (idx in range(length(unpadded_intervals))) {
     # The batch_size value was carefully chosen here as it
@@ -462,7 +459,7 @@ if (cross_check_fingerprints) {
     Array[File] output_vcf_indices = select_all(output_vcf_index_files)
 
     # Output the interval list generated/used by this run workflow.
-    Array[File] output_intervals = S.output_intervals
+    Array[File] output_intervals = SplitIntervalList.output_intervals
 
     # Output the metrics from crosschecking fingerprints.
     File? crosscheck_fingerprint_check = crosscheck_fingerprint_results

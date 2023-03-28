@@ -35,9 +35,6 @@ task CheckSamplesUnique {
   }
 }
 
-## Error: hardlink or symlink all the files into the glob directory: 
-##  call-SplitIntervalList/execution/script: line 45: /bin/ln: Argument list too long
-## Fix: scatterDir -> s 
 task SplitIntervalList {
 
   input {
@@ -60,7 +57,7 @@ task SplitIntervalList {
 
   command <<<
     gatk --java-options "-Xms3000m -Xmx3250m" SplitIntervals \
-      -L ~{interval_list} -O s -scatter ~{scatter_count} -R ~{ref_fasta} \
+      -L ~{interval_list} -O  scatterDir -scatter ~{scatter_count} -R ~{ref_fasta} \
       -mode ~{scatter_mode} --interval-merging-rule OVERLAPPING_ONLY \
       --extension .interval_list
     >>>
@@ -74,7 +71,7 @@ task SplitIntervalList {
   }
 
   output {
-    Array[File] output_intervals = glob("s/*")
+    Array[File] output_intervals = glob("scatterDir/*")
   }
 }
 
