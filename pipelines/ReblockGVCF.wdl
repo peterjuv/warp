@@ -22,8 +22,8 @@ workflow ReblockGVCF {
       ref_fasta = ref_fasta,
       ref_fasta_index = ref_fasta_index,
       ref_dict = ref_dict,
-      # output_vcf_filename = sub_sub + ".rbl.g.vcf.gz",
-      output_vcf_filename = sample_name + ".rbl.g.vcf.gz",
+      # output_vcf_filename = sub_sub + ".rb.g.vcf.gz",
+      output_vcf_filename = sample_name + ".rb.g.vcf.gz",
   }
   
   output {
