@@ -298,7 +298,6 @@ task GenotypeGVCFs {
       ~{"-A " + additional_annotation} \
       ~{true='--allow-old-rms-mapping-quality-annotation-data' false='' allow_old_rms_mapping_quality_annotation_data} \
       ~{true='--keep-combined-raw-annotations' false='' keep_combined_raw_annotations} \
-      --merge-input-intervals \
       --max-alternate-alleles 4 \
       --genomicsdb-max-alternate-alleles 7 \
       --max-genotype-count 256
