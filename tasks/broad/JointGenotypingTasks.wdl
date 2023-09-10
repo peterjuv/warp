@@ -113,7 +113,7 @@ task ImportGVCFs_import {
     # a significant amount of non-heap memory for native libraries.
     # Also, testing has shown that the multithreaded reader initialization
     # does not scale well beyond 5 threads, so don't increase beyond that.
-    gatk --java-options "-Xms8000m -Xmx25000m" \
+    gatk --java-options "-Xms16000m -Xmx38000m" \
       GenomicsDBImport \
       --genomicsdb-workspace-path ~{workspace_dir_name} \
       --batch-size ~{batch_size} \
@@ -122,14 +122,15 @@ task ImportGVCFs_import {
       --reader-threads 5 \
       --merge-input-intervals \
       --consolidate \
-      --genomicsdb-shared-posixfs-optimizations true
+      --genomicsdb-shared-posixfs-optimizations true \
+      --bypass-feature-reader true
 
     tar -cf ~{workspace_dir_name}.tar ~{workspace_dir_name}
   >>>
 
   runtime {
-    memory: "26000 MiB"
-    cpu: 4
+    memory: "40000 MiB"
+    cpu: 5
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     docker: gatk_docker
@@ -178,7 +179,7 @@ task ImportGVCFs_update {
     # a significant amount of non-heap memory for native libraries.
     # Also, testing has shown that the multithreaded reader initialization
     # does not scale well beyond 5 threads, so don't increase beyond that.
-    gatk --java-options "-Xms8000m -Xmx25000m" \
+    gatk --java-options "-Xms16000m -Xmx38000m" \
       GenomicsDBImport \
       --genomicsdb-update-workspace-path $WORKSPACE \
       --batch-size ~{batch_size} \
@@ -187,13 +188,14 @@ task ImportGVCFs_update {
       --merge-input-intervals \
       --consolidate \
       --genomicsdb-shared-posixfs-optimizations true
+      --bypass-feature-reader true
 
     tar -cf ~{workspace_dir_name}.tar ~{workspace_dir_name}
   >>>
 
   runtime {
-    memory: "26000 MiB"
-    cpu: 4
+    memory: "40000 MiB"
+    cpu: 5
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     docker: gatk_docker
