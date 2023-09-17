@@ -77,8 +77,9 @@ task SplitIntervalList {
 
 # CEPH burden: https://gatk.broadinstitute.org/hc/en-us/articles/360056138571-GDBI-usage-and-performance-guidelines
 # Added     --genomicsdb-shared-posixfs-optimizations true  # improve the usability and performance for shared Posix Filesystems(e.g. NFS, Lustre)
-# Consider  --merge-contigs-into-num-partitions 1;5;25;<100 # This can improve performance in the case where the user is trying to import a very large number of contigs - larger than 100
 #           --bypass-feature-reader true                    # Use htslib to read input VCFs instead of GATK's FeatureReader. This will reduce memory usage and potentially speed up the import.
+# Consider  --merge-contigs-into-num-partitions 1;5;25;<100 # This can improve performance in the case where the user is trying to import a very large number of contigs - larger than 100
+# Effective usage @ Vega as reported by sacct is: cpu: 5, mem: 32500M
 task ImportGVCFs_import {
 
   input {
@@ -246,8 +247,9 @@ task ImportGDB {
   }
 }
 
-# Override: cpu, before 2, used 4
-#           mem 26->32 GB, java mem 31 GB, default 25 GB
+# Override: cpu 2->4->5 to allow enugh mem
+#           mem 26->32->40 GB, java mem 25->31->38 GB
+# Effective usage @ Vega using cpu 4 mem 32 was (as reported by sacct): cpu 4, mem 32000M
 # Added: --max-alternate-alleles 4, default 6
 #        --genomicsdb-max-alternate-alleles 7, default max-alternate-alleles + 3
 #        --max-genotype-count 256 (== 2^8); default 2^10=1024
@@ -288,7 +290,7 @@ task GenotypeGVCFs {
     tar -xf ~{workspace_tar}
     WORKSPACE=$(basename ~{workspace_tar} .tar)
 
-    gatk --java-options "-Xms8000m -Xmx31000m" \
+    gatk --java-options "-Xms16000m -Xmx38000m" \
       GenotypeGVCFs \
       -R ~{ref_fasta} \
       -O ~{output_vcf_filename} \
@@ -306,8 +308,8 @@ task GenotypeGVCFs {
   >>>
 
   runtime {
-    memory: "32000 MiB"
-    cpu: 4
+    memory: "40000 MiB"
+    cpu: 5
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
