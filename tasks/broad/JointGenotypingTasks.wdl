@@ -898,6 +898,8 @@ task CollectVariantCallingMetrics {
   }
 }
 
+## Effective use for FinalGatherVcf @ Vega: cpu 2 mem 8G
+## Thus, increased cpu 1->2, mem 3->8G, Xms 2000->5000m, Xmx 2500->7000m
 task GatherVariantCallingMetrics {
 
   input {
@@ -955,15 +957,15 @@ task GatherVariantCallingMetrics {
 
     INPUT=$(cat $input_details_fofn | rev | cut -d '/' -f 1 | rev | sed s/.variant_calling_detail_metrics//g | awk '{printf("--INPUT metrics/%s ", $1)}')
 
-    gatk --java-options "-Xms2000m -Xmx2500m" \
+    gatk --java-options "-Xms5000m -Xmx7000m" \
       AccumulateVariantCallingMetrics \
       $INPUT \
       --OUTPUT ~{output_prefix}
   >>>
 
   runtime {
-    memory: "3000 MiB"
-    cpu: "1"
+    memory: "8000 MiB"
+    cpu: "2"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
