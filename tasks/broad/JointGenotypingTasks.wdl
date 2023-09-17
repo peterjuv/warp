@@ -760,6 +760,8 @@ task ApplyRecalibration {
   }
 }
 
+## Effective use for FinalGatherVcf @ Vega: cpu 2 mem 11G
+## Thus, increased cpu 1->2, mem 7->17G, Xms 6000->12000m, Xmx 6500->15000m
 task GatherVcfs {
 
   input {
@@ -781,7 +783,7 @@ task GatherVcfs {
     # --ignore-safety-checks makes a big performance difference so we include it in our invocation.
     # This argument disables expensive checks that the file headers contain the same set of
     # genotyped samples and that files are in order by position of first record.
-    gatk --java-options "-Xms6000m -Xmx6500m" \
+    gatk --java-options "-Xms12000m -Xmx15000m" \
       GatherVcfsCloud \
       --ignore-safety-checks \
       --gather-type BLOCK \
@@ -792,8 +794,8 @@ task GatherVcfs {
   >>>
 
   runtime {
-    memory: "7000 MiB"
-    cpu: "1"
+    memory: "16000 MiB"
+    cpu: "2"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
