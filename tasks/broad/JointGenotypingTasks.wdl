@@ -79,7 +79,7 @@ task SplitIntervalList {
 # Added     --genomicsdb-shared-posixfs-optimizations true  # improve the usability and performance for shared Posix Filesystems(e.g. NFS, Lustre)
 #           --bypass-feature-reader true                    # Use htslib to read input VCFs instead of GATK's FeatureReader. This will reduce memory usage and potentially speed up the import.
 # Consider  --merge-contigs-into-num-partitions 1;5;25;<100 # This can improve performance in the case where the user is trying to import a very large number of contigs - larger than 100
-# Effective usage @ Vega as reported by sacct is: cpu: 5, mem: 32500M
+# Effective usage @ Vega as reported by sacct was: cpu: 5, mem: 32500M
 task ImportGVCFs_import {
 
   input {
@@ -114,7 +114,7 @@ task ImportGVCFs_import {
     # a significant amount of non-heap memory for native libraries.
     # Also, testing has shown that the multithreaded reader initialization
     # does not scale well beyond 5 threads, so don't increase beyond that.
-    gatk --java-options "-Xms16000m -Xmx38000m" \
+    gatk --java-options "-Xms16000m -Xmx46000m" \
       GenomicsDBImport \
       --genomicsdb-workspace-path ~{workspace_dir_name} \
       --batch-size ~{batch_size} \
@@ -130,8 +130,8 @@ task ImportGVCFs_import {
   >>>
 
   runtime {
-    memory: "40000 MiB"
-    cpu: 5
+    requested_memory_mb_per_core: 8000
+    cpu: 6
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     docker: gatk_docker
@@ -180,7 +180,7 @@ task ImportGVCFs_update {
     # a significant amount of non-heap memory for native libraries.
     # Also, testing has shown that the multithreaded reader initialization
     # does not scale well beyond 5 threads, so don't increase beyond that.
-    gatk --java-options "-Xms16000m -Xmx38000m" \
+    gatk --java-options "-Xms16000m -Xmx46000m" \
       GenomicsDBImport \
       --genomicsdb-update-workspace-path $WORKSPACE \
       --batch-size ~{batch_size} \
@@ -195,8 +195,8 @@ task ImportGVCFs_update {
   >>>
 
   runtime {
-    memory: "40000 MiB"
-    cpu: 5
+    requested_memory_mb_per_core: 8000
+    cpu: 6
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     docker: gatk_docker
