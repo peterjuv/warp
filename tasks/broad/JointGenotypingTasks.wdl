@@ -249,12 +249,14 @@ task ImportGDB {
 
 # Override: cpu 2->4->5 to allow enugh mem
 #           mem 26->32->40 GB, java mem 25->31->38 GB
-# Effective usage @ Vega using cpu 4 mem 32 was (as reported by sacct): cpu 4, mem 32000M
+# Effective usage @ Vega as reported by top: cpu 2, mem 6570M
 # Added: --max-alternate-alleles 4, default 6
 #        --genomicsdb-max-alternate-alleles 7, default max-alternate-alleles + 3
 #        --max-genotype-count 256 (== 2^8); default 2^10=1024
 # Note: --disable-bam-index-caching: Caching is automatically disabled if there are no intervals specified.
 # Ref: https://gatk.broadinstitute.org/hc/en-us/community/posts/360063088471-Speeding-up-GenotypeGVCFS-GATK4
+# TEST increase mem 56G: no speed difference
+# TEST decrease mem 8G: using 11G VIRT, no speed difference
 task GenotypeGVCFs {
 
   input {
