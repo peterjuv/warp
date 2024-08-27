@@ -48,7 +48,7 @@ task SortSam {
   runtime {
     docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.26.10"
     disks: "local-disk " + disk_size + " HDD"
-    cpu: "1"
+    cpu: "5" #"1"
     memory: "${machine_mem_mb} MiB"
     preemptible: preemptible_tries
   }
@@ -465,7 +465,7 @@ task CheckContamination {
     memory: "7.5 GiB"
     disks: "local-disk " + disk_size + " HDD"
     docker: "us.gcr.io/broad-gotc-prod/verify-bam-id:1.0.1-c1cba76e979904eb69c31520a0d7f5be63c72253-1639071840"
-    cpu: 2
+    cpu: 8 #2
   }
   output {
     File selfSM = "~{output_prefix}.selfSM"

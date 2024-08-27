@@ -69,7 +69,7 @@ task HaplotypeCaller_GATK35_GVCF {
     docker: "us.gcr.io/broad-gotc-prod/gatk:1.3.0-4.2.6.1-1649964384"
     preemptible: preemptible_tries
     memory: "10000 MiB"
-    cpu: "1"
+    cpu: "10" #"1"
     disks: "local-disk " + disk_size + " HDD"
   }
   output {
@@ -151,7 +151,7 @@ task HaplotypeCaller_GATK4_VCF {
     docker: gatk_docker
     preemptible: preemptible_tries
     memory: "~{memory_size_mb} MiB"
-    cpu: "2"
+    cpu: "8" #"2"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
   }
@@ -355,7 +355,7 @@ task CNNScoreVariants {
     docker: gatk_docker
     preemptible: preemptible_tries
     memory: "15000 MiB"
-    cpu: "2"
+    cpu: "15" #"2"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
   }
@@ -411,7 +411,7 @@ task FilterVariantTranches {
 
   runtime {
     memory: "7000 MiB"
-    cpu: "2"
+    cpu: "7" #"2"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: preemptible_tries

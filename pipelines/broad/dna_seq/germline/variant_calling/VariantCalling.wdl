@@ -240,6 +240,6 @@ task MergeBamouts {
     memory: "4 GiB"
     disks: "local-disk ~{disk_size} HDD"
     preemptible: 3
-    cpu: 1
+    cpu: 4 #1
   }
 }
