@@ -48,9 +48,10 @@ task SortSam {
   runtime {
     docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.26.10"
     disks: "local-disk " + disk_size + " HDD"
-    cpu: "5" #"1"
+    cpu: "3" #"1"
     memory: "${machine_mem_mb} MiB"
     preemptible: preemptible_tries
+    runtime_minutes: 480
   }
   output {
     File output_bam = "~{output_bam_basename}.bam"
@@ -166,6 +167,7 @@ task BaseRecalibrator {
     memory: "6000 MiB"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
+    runtime_minutes: 60
   }
   output {
     File recalibration_report = "~{recalibration_report_filename}"
@@ -232,6 +234,7 @@ task ApplyBQSR {
     memory: "~{memory_size} MiB"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
+    runtime_minutes: 60
   }
   output {
     File recalibrated_bam = "~{output_bam_basename}.bam"
@@ -260,6 +263,7 @@ task GatherBqsrReports {
     memory: "3500 MiB"
     bootDiskSizeGb: 15
     disks: "local-disk 20 HDD"
+    runtime_minutes: 1
   }
   output {
     File output_bqsr_report = "~{output_report_filename}"
@@ -297,6 +301,7 @@ task GatherSortedBamFiles {
     preemptible: preemptible_tries
     memory: "${machine_mem_mb} MiB"
     disks: "local-disk " + disk_size + " HDD"
+    runtime_minutes: 120
   }
   output {
     File output_bam = "~{output_bam_basename}.bam"
@@ -465,7 +470,7 @@ task CheckContamination {
     memory: "7.5 GiB"
     disks: "local-disk " + disk_size + " HDD"
     docker: "us.gcr.io/broad-gotc-prod/verify-bam-id:1.0.1-c1cba76e979904eb69c31520a0d7f5be63c72253-1639071840"
-    cpu: 8 #2
+    cpu: "4" #2
   }
   output {
     File selfSM = "~{output_prefix}.selfSM"

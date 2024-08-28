@@ -64,6 +64,7 @@ task CreateSequenceGroupingTSV {
     preemptible: preemptible_tries
     docker: "us.gcr.io/broad-dsp-gcr-public/base/python:3.9-debian"
     memory: "2 GiB"
+    runtime_minutes: 1
   }
   output {
     Array[Array[String]] sequence_grouping = read_tsv("sequence_grouping.txt")
@@ -147,8 +148,9 @@ task ConvertToCram {
     docker: "us.gcr.io/broad-gotc-prod/samtools:1.0.0-1.11-1624651616"
     preemptible: preemptible_tries
     memory: "3 GiB"
-    cpu: "3" #"1"
+    cpu: "2" #"1"
     disks: "local-disk " + disk_size + " HDD"
+    runtime_minutes: 300
   }
   output {
     File output_cram = "~{output_basename}.cram"
@@ -178,7 +180,7 @@ task ConvertToBam {
     docker: "us.gcr.io/broad-gotc-prod/samtools:1.0.0-1.11-1624651616"
     preemptible: 3
     memory: "3 GiB"
-    cpu: "3" #"1"
+    cpu: "2" #"1"
     disks: "local-disk 200 HDD"
   }
   output {
@@ -203,6 +205,7 @@ task SumFloats {
   runtime {
     docker: "us.gcr.io/broad-dsp-gcr-public/base/python:3.9-debian"
     preemptible: preemptible_tries
+    runtime_minutes: 1
   }
 }
 

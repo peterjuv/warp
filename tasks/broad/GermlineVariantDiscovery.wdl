@@ -69,8 +69,9 @@ task HaplotypeCaller_GATK35_GVCF {
     docker: "us.gcr.io/broad-gotc-prod/gatk:1.3.0-4.2.6.1-1649964384"
     preemptible: preemptible_tries
     memory: "10000 MiB"
-    cpu: "10" #"1"
+    cpu: "5" #"1"
     disks: "local-disk " + disk_size + " HDD"
+    runtime_minutes: 960
   }
   output {
     File output_gvcf = "~{gvcf_basename}.vcf.gz"
@@ -151,7 +152,7 @@ task HaplotypeCaller_GATK4_VCF {
     docker: gatk_docker
     preemptible: preemptible_tries
     memory: "~{memory_size_mb} MiB"
-    cpu: "8" #"2"
+    cpu: "4" #"2"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
   }
@@ -187,6 +188,8 @@ task MergeVCFs {
     preemptible: preemptible_tries
     memory: "3000 MiB"
     disks: "local-disk ~{disk_size} HDD"
+    cpu: "2"
+    runtime_minutes: 15
   }
   output {
     File output_vcf = "~{output_vcf_name}"
@@ -231,6 +234,8 @@ task Reblock {
     bootDiskSizeGb: 15
     preemptible: 3
     docker: docker_image
+    cpu: "2"
+    runtime_minutes: 25
   }
 
   output {
@@ -355,7 +360,7 @@ task CNNScoreVariants {
     docker: gatk_docker
     preemptible: preemptible_tries
     memory: "15000 MiB"
-    cpu: "15" #"2"
+    cpu: "8" #"2"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
   }
@@ -411,7 +416,7 @@ task FilterVariantTranches {
 
   runtime {
     memory: "7000 MiB"
-    cpu: "7" #"2"
+    cpu: "4" #"2"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: preemptible_tries
