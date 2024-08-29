@@ -51,7 +51,7 @@ task SortSam {
     cpu: "3" #"1"
     memory: "${machine_mem_mb} MiB"
     preemptible: preemptible_tries
-    runtime_minutes: 480
+    runtime_minutes: 960
   }
   output {
     File output_bam = "~{output_bam_basename}.bam"
@@ -112,6 +112,7 @@ task MarkDuplicates {
     preemptible: preemptible_tries
     memory: "~{memory_size} GiB"
     disks: "local-disk " + disk_size + " HDD"
+    cpu: "16"
   }
   output {
     File output_bam = "~{output_bam_basename}.bam"
@@ -234,7 +235,7 @@ task ApplyBQSR {
     memory: "~{memory_size} MiB"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
-    runtime_minutes: 60
+    runtime_minutes: 120
   }
   output {
     File recalibrated_bam = "~{output_bam_basename}.bam"
@@ -301,7 +302,7 @@ task GatherSortedBamFiles {
     preemptible: preemptible_tries
     memory: "${machine_mem_mb} MiB"
     disks: "local-disk " + disk_size + " HDD"
-    runtime_minutes: 120
+    runtime_minutes: 240
   }
   output {
     File output_bam = "~{output_bam_basename}.bam"

@@ -189,7 +189,7 @@ task MergeVCFs {
     memory: "3000 MiB"
     disks: "local-disk ~{disk_size} HDD"
     cpu: "2"
-    runtime_minutes: 15
+    runtime_minutes: 30
   }
   output {
     File output_vcf = "~{output_vcf_name}"
