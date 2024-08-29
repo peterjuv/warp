@@ -189,7 +189,7 @@ task MergeVCFs {
     memory: "3000 MiB"
     disks: "local-disk ~{disk_size} HDD"
     cpu: "2"
-    runtime_minutes: 30
+    runtime_minutes: 120
   }
   output {
     File output_vcf = "~{output_vcf_name}"
@@ -235,7 +235,7 @@ task Reblock {
     preemptible: 3
     docker: docker_image
     cpu: "2"
-    runtime_minutes: 25
+    runtime_minutes: 120
   }
 
   output {
