@@ -689,7 +689,7 @@ task CollectVariantCallingMetrics {
     memory: "3000 MiB"
     disks: "local-disk " + disk_size + " HDD"
     cpu: "2"
-    runtime_minutes: 12
+    runtime_minutes: 30
   }
   output {
     File summary_metrics = "~{metrics_basename}.variant_calling_summary_metrics"
