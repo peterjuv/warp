@@ -235,7 +235,7 @@ task Reblock {
     preemptible: 3
     docker: docker_image
     cpu: "2"
-    runtime_minutes: 120
+    runtime_minutes: 240
   }
 
   output {
