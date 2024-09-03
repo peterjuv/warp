@@ -64,7 +64,7 @@ task CreateSequenceGroupingTSV {
     preemptible: preemptible_tries
     docker: "us.gcr.io/broad-dsp-gcr-public/base/python:3.9-debian"
     memory: "2 GiB"
-    runtime_minutes: 1
+    runtime_minutes: 10
   }
   output {
     Array[Array[String]] sequence_grouping = read_tsv("sequence_grouping.txt")
@@ -205,7 +205,7 @@ task SumFloats {
   runtime {
     docker: "us.gcr.io/broad-dsp-gcr-public/base/python:3.9-debian"
     preemptible: preemptible_tries
-    runtime_minutes: 1
+    runtime_minutes: 10
   }
 }
 

@@ -264,7 +264,7 @@ task GatherBqsrReports {
     memory: "3500 MiB"
     bootDiskSizeGb: 15
     disks: "local-disk 20 HDD"
-    runtime_minutes: 1
+    runtime_minutes: 10
   }
   output {
     File output_bqsr_report = "~{output_report_filename}"

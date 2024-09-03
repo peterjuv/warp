@@ -393,7 +393,7 @@ task CheckPreValidation {
     preemptible: preemptible_tries
     memory: "2 GiB"
     cpu: "2"
-    runtime_minutes: 1
+    runtime_minutes: 10
   }
   output {
     Float duplication_rate = read_float("duplication_value.txt")
@@ -606,7 +606,7 @@ task CalculateReadGroupChecksum {
     memory: "4000 MiB"
     disks: "local-disk " + disk_size + " HDD"
     cpu: "2"
-    runtime_minutes: 1
+    runtime_minutes: 10
   }
   output {
     File md5_file = "~{read_group_md5_filename}"
