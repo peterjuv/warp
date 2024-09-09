@@ -128,6 +128,8 @@ task CollectReadgroupBamQualityMetrics {
     memory: "7000 MiB"
     disks: "local-disk " + disk_size + " HDD"
     preemptible: preemptible_tries
+    cpu: "4"
+    runtime_minutes: 360
   }
   output {
     File alignment_summary_metrics = "~{output_bam_prefix}.alignment_summary_metrics"
@@ -182,6 +184,8 @@ task CollectAggregationMetrics {
     memory: "7000 MiB"
     disks: "local-disk " + disk_size + " HDD"
     preemptible: preemptible_tries
+    cpu: "4"
+    runtime_minutes: 720
   }
   output {
     File alignment_summary_metrics = "~{output_bam_prefix}.alignment_summary_metrics"
@@ -388,6 +392,8 @@ task CheckPreValidation {
     docker: "us.gcr.io/broad-dsp-gcr-public/base/python:3.9-debian"
     preemptible: preemptible_tries
     memory: "2 GiB"
+    cpu: "2"
+    runtime_minutes: 10
   }
   output {
     Float duplication_rate = read_float("duplication_value.txt")
@@ -438,6 +444,8 @@ task ValidateSamFile {
     preemptible: preemptible_tries
     memory: "~{memory_size} MiB"
     disks: "local-disk " + disk_size + " HDD"
+    cpu: "8"
+    runtime_minutes: 360
   }
   output {
     File report = "~{report_filename}"
@@ -597,6 +605,8 @@ task CalculateReadGroupChecksum {
     preemptible: preemptible_tries
     memory: "4000 MiB"
     disks: "local-disk " + disk_size + " HDD"
+    cpu: "2"
+    runtime_minutes: 10
   }
   output {
     File md5_file = "~{read_group_md5_filename}"
@@ -642,6 +652,8 @@ task ValidateVCF {
     memory: "16000 MiB"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
+    cpu: "8"
+    runtime_minutes: 15
   }
 }
 
@@ -676,6 +688,8 @@ task CollectVariantCallingMetrics {
     preemptible: preemptible_tries
     memory: "3000 MiB"
     disks: "local-disk " + disk_size + " HDD"
+    cpu: "2"
+    runtime_minutes: 30
   }
   output {
     File summary_metrics = "~{metrics_basename}.variant_calling_summary_metrics"
