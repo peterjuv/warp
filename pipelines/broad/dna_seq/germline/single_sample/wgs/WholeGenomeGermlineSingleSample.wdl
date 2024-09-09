@@ -56,7 +56,10 @@ workflow WholeGenomeGermlineSingleSample {
     File? fingerprint_genotypes_index
 
     File input_cram
-
+    File input_ref_dict
+    File input_ref_fasta
+    File input_ref_fasta_index
+  
     File wgs_coverage_interval_list
 
     Boolean provide_bam_output = false
@@ -108,9 +111,9 @@ workflow WholeGenomeGermlineSingleSample {
     input:
       input_cram = input_cram,
       sample_name = sample_and_unmapped_bams.sample_name,
-      ref_fasta = references.reference_fasta.ref_fasta,
-      ref_fasta_index = references.reference_fasta.ref_fasta_index,
-      ref_dict = references.reference_fasta.ref_dict
+      ref_fasta = input_ref_fasta,
+      ref_fasta_index = input_ref_fasta_index,
+      ref_dict = input_ref_dict
   }
 
   call BamToUbam.BamToUnmappedBams {
