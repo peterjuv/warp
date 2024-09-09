@@ -603,9 +603,9 @@ task CalculateReadGroupChecksum {
   runtime {
     docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.26.10"
     preemptible: preemptible_tries
-    memory: "4000 MiB"
+    memory: "6000 MiB"
     disks: "local-disk " + disk_size + " HDD"
-    cpu: "2"
+    cpu: "4"
     runtime_minutes: 10
   }
   output {
