@@ -32,6 +32,8 @@ task CheckSamplesUnique {
     preemptible: 1
     disks: "local-disk 10 HDD"
     docker: "us.gcr.io/broad-gotc-prod/python:2.7"
+    cpu: 1
+    runtime_minutes: 10
   }
 }
 
@@ -68,6 +70,8 @@ task SplitIntervalList {
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     docker: gatk_docker
+    cpu: 2
+    runtime_minutes: 10
   }
 
   output {
@@ -130,8 +134,9 @@ task ImportGVCFs_import {
   >>>
 
   runtime {
-    requested_memory_mb_per_core: 8000
-    cpu: 6
+    #requested_memory_mb_per_core: 8000
+    memory: "48 GiB"
+    cpu: 24 #6
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     docker: gatk_docker
@@ -195,8 +200,9 @@ task ImportGVCFs_update {
   >>>
 
   runtime {
-    requested_memory_mb_per_core: 8000
-    cpu: 6
+    #requested_memory_mb_per_core: 8000
+    memory: "48 GiB"
+    cpu: 24 #6
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     docker: gatk_docker
@@ -235,7 +241,7 @@ task ImportGDB {
 
   runtime {
     memory: "3750 MiB"
-    cpu: 1
+    cpu: 2
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     docker: gatk_docker
@@ -311,7 +317,7 @@ task GenotypeGVCFs {
 
   runtime {
     memory: "40000 MiB"
-    cpu: 5
+    cpu: 20
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
@@ -353,7 +359,7 @@ task GnarlyGenotyper {
     tar -xf ~{workspace_tar}
     WORKSPACE=$( basename ~{workspace_tar} .tar)
 
-    gatk --java-options "-Xms8000m -Xmx25000m" \
+    gatk --java-options "-Xms8000m -Xmx27000m" \
       GnarlyGenotyper \
       -R ~{ref_fasta} \
       -O ~{output_vcf_filename} \
@@ -368,8 +374,8 @@ task GnarlyGenotyper {
   >>>
 
   runtime {
-    memory: "26000 MiB"
-    cpu: 2
+    memory: "28000 MiB" #"26000 MiB"
+    cpu: 14 #2
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
@@ -416,7 +422,7 @@ task HardFilterAndMakeSitesOnlyVcf {
 
   runtime {
     memory: "3750 MiB"
-    cpu: "1"
+    cpu: 2 #"1"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
@@ -459,7 +465,7 @@ task IndelsVariantRecalibrator {
   command <<<
     set -euo pipefail
 
-    gatk --java-options "-Xms24000m -Xmx25000m" \
+    gatk --java-options "-Xms24000m -Xmx27000m" \
       VariantRecalibrator \
       -V ~{sites_only_variant_filtered_vcf} \
       -O ~{recalibration_filename} \
@@ -476,8 +482,8 @@ task IndelsVariantRecalibrator {
   >>>
 
   runtime {
-    memory: "26000 MiB"
-    cpu: "2"
+    memory: "28000 MiB" #"26000 MiB"
+    cpu: 14 #"2"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
@@ -544,7 +550,7 @@ task SNPsVariantRecalibratorCreateModel {
 
   runtime {
     memory: "104 GiB"
-    cpu: "2"
+    cpu: 52 #"2"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
@@ -681,7 +687,7 @@ task GatherTranches {
 
     cat $tranches_fofn | rev | cut -d '/' -f 1 | rev | awk '{print "tranches/" $1}' > inputs.list
 
-    gatk --java-options "-Xmx6000m -Xmx7000m" \
+    gatk --java-options "-Xmx6500m -Xmx7500m" \
       GatherTranches \
       --input inputs.list \
       --mode ~{mode} \
@@ -689,8 +695,8 @@ task GatherTranches {
   >>>
 
   runtime {
-    memory: "7500 MiB"
-    cpu: "2"
+    memory: "8000 MiB" #"7500 MiB"
+    cpu: 4 #"2"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
@@ -724,7 +730,7 @@ task ApplyRecalibration {
   command <<<
     set -euo pipefail
 
-    gatk --java-options "-Xms5000m -Xmx6500m" \
+    gatk --java-options "-Xms5000m -Xmx7500m" \
       ApplyVQSR \
       -O tmp.indel.recalibrated.vcf \
       -V ~{input_vcf} \
@@ -735,7 +741,7 @@ task ApplyRecalibration {
       --create-output-variant-index true \
       -mode INDEL
 
-    gatk --java-options "-Xms5000m -Xmx6500m" \
+    gatk --java-options "-Xms5000m -Xmx7500m" \
       ApplyVQSR \
       -O ~{recalibrated_vcf_filename} \
       -V tmp.indel.recalibrated.vcf \
@@ -748,8 +754,8 @@ task ApplyRecalibration {
   >>>
 
   runtime {
-    memory: "7000 MiB"
-    cpu: "1"
+    memory: "8000 MiB" # "7000 MiB"
+    cpu: 4 #"1"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
@@ -797,7 +803,7 @@ task GatherVcfs {
 
   runtime {
     memory: "16000 MiB"
-    cpu: "2"
+    cpu: 8 #"2"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
@@ -836,7 +842,7 @@ task SelectFingerprintSiteVariants {
 
     hdb_to_interval_list ~{haplotype_database} > hdb.interval_list
 
-    gatk --java-options "-Xms6000m -Xmx7000m" \
+    gatk --java-options "-Xms6000m -Xmx7500m" \
       SelectVariants \
       --variant ~{input_vcf} \
       --intervals hdb.interval_list \
@@ -844,8 +850,8 @@ task SelectFingerprintSiteVariants {
   >>>
 
   runtime {
-    memory: "7500 MiB"
-    cpu: 1
+    memory: "8000 MiB" #"7500 MiB"
+    cpu: 4 #1
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
@@ -875,7 +881,7 @@ task CollectVariantCallingMetrics {
   command <<<
     set -euo pipefail
 
-    gatk --java-options "-Xms6000m -Xmx7000m" \
+    gatk --java-options "-Xms6000m -Xmx7500m" \
       CollectVariantCallingMetrics \
       --INPUT ~{input_vcf} \
       --DBSNP ~{dbsnp_vcf} \
@@ -891,8 +897,8 @@ task CollectVariantCallingMetrics {
   }
 
   runtime {
-    memory: "7500 MiB"
-    cpu: 2
+    memory: "8000 MiB" #"7500 MiB"
+    cpu: 4 #2
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
@@ -959,7 +965,7 @@ task GatherVariantCallingMetrics {
 
     INPUT=$(cat $input_details_fofn | rev | cut -d '/' -f 1 | rev | sed s/.variant_calling_detail_metrics//g | awk '{printf("--INPUT metrics/%s ", $1)}')
 
-    gatk --java-options "-Xms5000m -Xmx7000m" \
+    gatk --java-options "-Xms5000m -Xmx7500m" \
       AccumulateVariantCallingMetrics \
       $INPUT \
       --OUTPUT ~{output_prefix}
@@ -967,7 +973,7 @@ task GatherVariantCallingMetrics {
 
   runtime {
     memory: "8000 MiB"
-    cpu: "2"
+    cpu: 4 #"2"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
@@ -1003,10 +1009,13 @@ task CrossCheckFingerprint {
   }
 
   Int num_gvcfs = length(gvcf_paths)
-  Int cpu = if num_gvcfs < 32 then num_gvcfs else 32
+  #Int cpu = if num_gvcfs < 32 then num_gvcfs else 32
+  Int cpu = if num_gvcfs < 60 then num_gvcfs else 60
   # Compute memory to use based on the CPU count, following the pattern of
   # 3.75GiB / cpu used by GCP's pricing: https://cloud.google.com/compute/pricing
-  Int memMb = round(cpu * 3.75 * 1024)
+  #Int memMb = round(cpu * 3.75 * 1024)
+  # 2GiB / cpu used by Vega cpu partition
+  Int memMb = round(cpu * 2 * 1024)
   Int java_mem = memMb - 512
   Int disk = 100
 
@@ -1062,6 +1071,7 @@ task CrossCheckFingerprint {
     disks: "local-disk " + disk + " HDD"
     preemptible: 0
     docker: gatk_docker
+    cpu: cpu
   }
 
   output {
@@ -1095,8 +1105,8 @@ task GatherPicardMetrics {
   }
 
   runtime {
-    cpu: 1
-    memory: "3.75 GiB"
+    cpu: 2 #1
+    memory: "4 GiB" #"3.75 GiB"
     preemptible: 1
     disks: "local-disk " + disk_size + " HDD"
     docker: "us.gcr.io/broad-gotc-prod/python:2.7"
@@ -1174,7 +1184,7 @@ task GetFingerprintingIntervalIndices {
 
   runtime {
     cpu: 2
-    memory: "3750 MiB"
+    memory: "4 GiB" #"3750 MiB"
     preemptible: 1
     bootDiskSizeGb: 15
     disks: "local-disk 10 HDD"
@@ -1207,6 +1217,7 @@ task PartitionSampleNameMap {
     preemptible: 1
     disks: "local-disk 10 HDD"
     docker: "us.gcr.io/broad-gotc-prod/python:2.7"
+    cpu: 1
   }
 }
 
@@ -1244,5 +1255,6 @@ task CalculateAverageAnnotations {
     memory: "${memory_mb} MiB"
     preemptible: preemptible
     maxRetries : max_retries
+    cpu: 6
   }
 }
