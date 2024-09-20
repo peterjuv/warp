@@ -8,7 +8,10 @@
     "final_gvcf_base_name": "RD660",
     "unmapped_bam_suffix": ".bam"
   },
-  "WholeGenomeGermlineSingleSample.input_mapped_bam": "/absPath/inputs/RD660.marked.bam",
+  "WholeGenomeGermlineSingleSample.input_cram": "/absPath/inputs/RD660.hg19.cram",
+  "WholeGenomeGermlineSingleSample.input_ref_dict": "/absPath/wgs_reference/Homo_sapiens_assembly19.dict",
+  "WholeGenomeGermlineSingleSample.input_ref_fasta": "/absPath/wgs_reference/Homo_sapiens_assembly19.fasta",
+  "WholeGenomeGermlineSingleSample.input_ref_fasta_index": "/absPath/wgs_reference/Homo_sapiens_assembly19.fasta.fai",
   "WholeGenomeGermlineSingleSample.references": {
     "contamination_sites_ud": "/absPath/wgs_reference/1000g.phase3.100k.b38.vcf.gz.dat.UD",
     "contamination_sites_bed": "/absPath/wgs_reference/1000g.phase3.100k.b38.vcf.gz.dat.bed",

@@ -36,6 +36,7 @@ import "../../../../../../tasks/broad/Utilities.wdl" as Utilities
 import "../../../../../../pipelines/broad/dna_seq/germline/variant_calling/VariantCalling.wdl" as ToGvcf
 import "../../../../../../structs/dna_seq/DNASeqStructs.wdl"
 import "https://raw.githubusercontent.com/peterjuv/seq-format-conversion/kigm-prod/bam-to-unmapped-bams.wdl" as BamToUbam
+import "https://raw.githubusercontent.com/peterjuv/seq-format-conversion/kigm-prod/cram-to-bam.wdl" as CramToBam
 
 # WORKFLOW DEFINITION
 workflow WholeGenomeGermlineSingleSample {
@@ -54,8 +55,11 @@ workflow WholeGenomeGermlineSingleSample {
     File? fingerprint_genotypes_file
     File? fingerprint_genotypes_index
 
-    File input_mapped_bam
-
+    File input_cram
+    File input_ref_dict
+    File input_ref_fasta
+    File input_ref_fasta_index
+  
     File wgs_coverage_interval_list
 
     Boolean provide_bam_output = false
@@ -103,9 +107,18 @@ workflow WholeGenomeGermlineSingleSample {
 
   String final_gvcf_base_name = select_first([sample_and_unmapped_bams.final_gvcf_base_name, sample_and_unmapped_bams.base_file_name])
 
+  call CramToBam.CramToBamFlow {
+    input:
+      input_cram = input_cram,
+      sample_name = sample_and_unmapped_bams.sample_name,
+      ref_fasta = input_ref_fasta,
+      ref_fasta_index = input_ref_fasta_index,
+      ref_dict = input_ref_dict
+  }
+
   call BamToUbam.BamToUnmappedBams {
     input:
-      input_bam = input_mapped_bam,
+      input_bam = CramToBamFlow.outputBam,
       sample_name = sample_and_unmapped_bams.sample_name
   }
 
