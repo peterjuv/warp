@@ -193,7 +193,7 @@ task ImportGVCFs_update {
       --reader-threads 5 \
       --merge-input-intervals \
       --consolidate \
-      --genomicsdb-shared-posixfs-optimizations true
+      --genomicsdb-shared-posixfs-optimizations true \
       --bypass-feature-reader true
 
     tar -cf ~{workspace_dir_name}.tar ~{workspace_dir_name}
@@ -246,6 +246,7 @@ task ImportGDB {
     disks: "local-disk " + disk_size + " HDD"
     docker: gatk_docker
     preemptible: 1
+    runtime_minutes: 10
   }
 
   output {
