@@ -408,26 +408,27 @@ task HardFilterAndMakeSitesOnlyVcf {
   command <<<
     set -euo pipefail
 
-    gatk --java-options "-Xms3000m -Xmx3250m" \
+    gatk --java-options "-Xms3000m -Xmx3500m" \
       VariantFiltration \
       --filter-expression "ExcessHet > ~{excess_het_threshold}" \
       --filter-name ExcessHet \
       -O ~{variant_filtered_vcf_filename} \
       -V ~{vcf}
 
-    gatk --java-options "-Xms3000m -Xmx3250m" \
+    gatk --java-options "-Xms3000m -Xmx3500m" \
       MakeSitesOnlyVcf \
       -I ~{variant_filtered_vcf_filename} \
       -O ~{sites_only_vcf_filename}
   >>>
 
   runtime {
-    memory: "3750 MiB"
+    memory: "4000 MiB" #"3750 MiB"
     cpu: 2 #"1"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
     docker: gatk_docker
+    runtime_minutes: 10
   }
 
   output {
@@ -761,6 +762,7 @@ task ApplyRecalibration {
     disks: "local-disk " + disk_size + " HDD"
     preemptible: 1
     docker: gatk_docker
+    runtime_minutes: 10
   }
 
   output {
